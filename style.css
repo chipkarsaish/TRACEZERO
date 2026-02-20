@@ -1,0 +1,1704 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body: black letterbox, centers the desktop */
+body {
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* ── Desktop container: fixed 1920×1080, scaled by JS ── */
+.desktop {
+    width: 1920px;
+    height: 1080px;
+    position: absolute;
+    transform-origin: top left;
+    overflow: hidden;
+    background-image: url('bg.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@keyframes floatAnim {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* ── Desktop Icons Area (top-left column) ── */
+.desktop-icons-area {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 10;
+}
+
+/* ── Individual Desktop Icon ── */
+.desktop-icon {
+    width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    user-select: none;
+    transition: background 0.12s;
+}
+
+.desktop-icon:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.desktop-icon:active {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.desktop-icon svg {
+    width: 88px;
+    height: 88px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.desktop-icon-img {
+    width: 112px;
+    height: 100px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+    object-fit: contain;
+}
+
+.desktop-icon span {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.3;
+    text-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(0, 0, 0, 0.6);
+    word-break: break-word;
+}
+
+
+.taskbar {
+    background-color: rgba(243, 243, 243, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 110;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.taskbar-center {
+    height: 68px;
+    object-fit: contain;
+}
+
+/* ── Right side of taskbar ── */
+.taskbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Chevron ^ button */
+.chevron-btn {
+    width: 22px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.12s;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.chevron-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+.chevron-btn.active {
+    background: rgba(0, 0, 0, 0.11);
+}
+
+/* System tray PNG */
+.tray-img {
+    height: 80%;
+    object-fit: contain;
+    margin: 0 4px;
+}
+
+/* ── Hidden Icons Popup ── */
+.hidden-icons-popup {
+    position: absolute;
+    bottom: 88px;
+    right: 190px;
+    width: 220px;
+
+    background: rgba(243, 243, 243, 0.97);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(220, 220, 220, 0.9);
+    border-radius: 12px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.18),
+        0 2px 6px rgba(0, 0, 0, 0.10);
+
+    padding: 12px 10px 16px;
+    z-index: 300;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.97);
+    transform-origin: bottom right;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.hidden-icons-popup.visible {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+}
+
+.popup-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 10px;
+    padding-left: 4px;
+}
+
+/* 4-column icon grid */
+.popup-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+}
+
+.tray-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.1s;
+}
+
+.tray-icon:hover {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+.tray-icon:active {
+    background: rgba(0, 0, 0, 0.13);
+}
+
+.tray-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Tooltip */
+.tray-icon::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(32, 32, 32, 0.92);
+    color: #fff;
+    font-size: 11px;
+    padding: 5px 9px;
+    border-radius: 5px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 999;
+}
+
+.tray-icon:hover::after {
+    opacity: 1;
+}
+
+/* Down-arrow caret */
+.popup-arrow {
+    position: absolute;
+    bottom: -7px;
+    right: 80px;
+    width: 13px;
+    height: 13px;
+    background: rgba(243, 243, 243, 0.97);
+    border-right: 1px solid rgba(220, 220, 220, 0.9);
+    border-bottom: 1px solid rgba(220, 220, 220, 0.9);
+    transform: rotate(45deg);
+}
+
+/* ── Start Menu ── */
+.startmenu {
+    position: absolute;
+    bottom: -1100px;
+    /* hidden below desktop */
+    width: 100%;
+    text-align: center;
+    z-index: 105;
+    transition: bottom 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.startmenu img {
+    border-radius: 12px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* ════════════════════════════════
+   FILE MANAGER WINDOW
+══════════════════════════════════ */
+.fm-window {
+    position: absolute;
+    top: 120px;
+    left: 260px;
+    width: 1100px;
+    height: 680px;
+    background: #f3f3f3;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: none;
+    /* hidden until opened */
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 200;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    min-width: 500px;
+    min-height: 320px;
+}
+
+.fm-window.open {
+    display: flex;
+}
+
+/* ── Title Bar ── */
+.fm-titlebar {
+    background: #ececec;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 0 12px;
+    cursor: grab;
+    user-select: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    flex-shrink: 0;
+}
+
+.fm-titlebar:active {
+    cursor: grabbing;
+}
+
+.fm-titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.fm-title-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.fm-title-text {
+    font-size: 15px;
+    font-weight: 400;
+    color: #1a1a1a;
+}
+
+/* Window control buttons */
+.fm-win-controls {
+    display: flex;
+    height: 100%;
+}
+
+.fm-ctrl {
+    width: 54px;
+    height: 46px;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fm-ctrl:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.fm-close:hover {
+    background: #c42b1c;
+    color: white;
+}
+
+/* ── Toolbar ── */
+.fm-toolbar {
+    background: #f3f3f3;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    flex-shrink: 0;
+}
+
+.fm-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+}
+
+.fm-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+.fm-nav-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.fm-address-bar {
+    flex: 1;
+    height: 34px;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #333;
+    margin-left: 4px;
+}
+
+.fm-search-bar {
+    width: 210px;
+    height: 34px;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.fm-search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 12px;
+    color: #333;
+    width: 100%;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.fm-search-input::placeholder {
+    color: #999;
+}
+
+/* ── Body layout ── */
+.fm-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.fm-sidebar {
+    width: 220px;
+    background: #f3f3f3;
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    overflow-y: auto;
+    padding: 8px 4px;
+    flex-shrink: 0;
+}
+
+.fm-sidebar-section {
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    padding: 6px 10px 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.fm-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 14px;
+    color: #222;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.fm-sidebar-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.fm-sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.fm-sidebar-item.active {
+    background: rgba(0, 120, 212, 0.12);
+    color: #0078D4;
+    font-weight: 500;
+}
+
+/* ── Main content ── */
+.fm-content {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.fm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0.75;
+}
+
+.fm-empty svg {
+    width: 96px;
+    height: 96px;
+}
+
+.fm-empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.fm-empty-sub {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+}
+
+/* ── Resize handle (bottom-right corner) ── */
+.fm-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+}
+
+/* ════════════════════════════════
+   TRACEZERO APP WINDOW
+══════════════════════════════════ */
+.tz-window {
+    position: absolute;
+    top: 140px;
+    left: 320px;
+    width: 1500px;
+    height: 900px;
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    z-index: 201;
+    min-width: 480px;
+    min-height: 300px;
+}
+
+.tz-window.open {
+    display: flex;
+}
+
+/* Title bar — dark / branded */
+.tz-titlebar {
+    height: 46px;
+    background: #0f0f0f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 0 14px;
+    cursor: grab;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.tz-titlebar:active {
+    cursor: grabbing;
+}
+
+.tz-titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.tz-title-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.tz-title-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.08em;
+}
+
+.tz-win-controls {
+    display: flex;
+    height: 100%;
+}
+
+/* Override control button colours for dark titlebar */
+.tz-win-controls .fm-ctrl {
+    color: #ccc;
+}
+
+.tz-win-controls .fm-ctrl:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.tz-win-controls .fm-close:hover {
+    background: #c42b1c;
+    color: #fff;
+}
+
+/* Blank content (user will fill this in) */
+.tz-content {
+    flex: 1;
+    background: #fff;
+    overflow: hidden;
+}
+
+/* Resize handle */
+.tz-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+}
+
+/* ════════════════════════════════════════
+   TRACEZERO APP INTERIOR STYLES
+════════════════════════════════════════ */
+#tzApp {
+    display: flex;
+    flex-direction: column;
+    width: 66.67%;
+    height: 66.67%;
+    transform: scale(1.5);
+    transform-origin: top left;
+    background: #0c0c10;
+    color: #e0e0e8;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+}
+
+/* ── TOP NAV ── */
+.tza-nav {
+    height: 52px;
+    background: #0a0a0e;
+    border-bottom: 1px solid #e02020;
+    box-shadow: 0 0 18px rgba(224, 32, 32, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+}
+
+.tza-nav-left,
+.tza-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tza-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tza-logo-icon {
+    width: 28px;
+    height: 32px;
+    filter: drop-shadow(0 0 6px #e02020);
+}
+
+.tza-logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.tza-app-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1.5px;
+}
+
+.tza-app-sub {
+    font-size: 9px;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+}
+
+.tza-nav-center {
+    display: flex;
+    align-items: center;
+}
+
+.tza-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(224, 32, 32, 0.12);
+    border: 1px solid rgba(224, 32, 32, 0.4);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fca5a5;
+}
+
+.tza-status-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e02020;
+    animation: tzPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes tzPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(224, 32, 32, 0.6);
+    }
+
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 5px rgba(224, 32, 32, 0);
+    }
+}
+
+.tza-zkm-badge {
+    font-size: 10px;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px;
+    padding: 3px 10px;
+}
+
+.tza-icon-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.tza-icon-btn:hover {
+    background: rgba(224, 32, 32, 0.15);
+    color: #fff;
+}
+
+.tza-icon-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* ── APP BODY ── */
+.tza-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.tza-sidebar {
+    width: 180px;
+    background: #0e0e14;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.tza-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+}
+
+.tza-sidebar-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.tza-sidebar-item:hover {
+    color: #e0e0e8;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.tza-sidebar-item.active {
+    color: #fff;
+    background: rgba(224, 32, 32, 0.1);
+    border-left-color: #e02020;
+}
+
+.tza-sidebar-item.active svg {
+    filter: drop-shadow(0 0 4px #e02020);
+}
+
+.tza-sidebar-footer {
+    margin-top: auto;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tza-sf-line {
+    font-size: 10px;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.tza-certified-mini {
+    font-size: 10px;
+    color: #22c55e;
+}
+
+/* ── MAIN AREA ── */
+.tza-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+}
+
+/* ── SCREENS ── */
+.tza-screen {
+    display: none;
+    height: 100%;
+}
+
+.tza-screen.active {
+    display: block;
+}
+
+/* ── CARDS ── */
+.tza-card {
+    background: #13131a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 0;
+}
+
+.tza-card:hover {
+    border-color: rgba(224, 32, 32, 0.2);
+}
+
+.tza-card-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.tza-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d1d5db;
+    letter-spacing: 0.5px;
+}
+
+/* ── DASHBOARD ── */
+.tza-dash-top {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.tza-risk-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    flex-shrink: 0;
+}
+
+.tza-gauge-wrap {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+}
+
+.tza-gauge-spinner {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px dashed rgba(224, 32, 32, 0.2);
+    animation: tzSpin 12s linear infinite;
+}
+
+@keyframes tzSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.tza-gauge-svg {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    z-index: 1;
+}
+
+.tza-risk-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tza-risk-level-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.tza-risk-level-badge.critical {
+    background: rgba(224, 32, 32, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(224, 32, 32, 0.4);
+    animation: tzGlow 2s ease-in-out infinite;
+}
+
+@keyframes tzGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px rgba(224, 32, 32, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 16px rgba(224, 32, 32, 0.8);
+    }
+}
+
+.tza-risk-desc {
+    font-size: 11px;
+    color: #9ca3af;
+    max-width: 160px;
+}
+
+.tza-last-scan {
+    font-size: 10px;
+    color: #4b5563;
+}
+
+.tza-stats-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    flex: 1;
+}
+
+.tza-stat-card {
+    background: #13131a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tza-stat-card.tza-sc-red {
+    border-color: rgba(224, 32, 32, 0.2);
+}
+
+.tza-stat-card.tza-sc-green {
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.tza-sc-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.tza-sc-lbl {
+    font-size: 10px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tza-sc-ico {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 18px;
+    opacity: 0.25;
+}
+
+/* Terminal */
+
+.tza-live-dot {
+    font-size: 10px;
+    color: #22c55e;
+    animation: tzBlink 1.2s ease-in-out infinite;
+}
+
+@keyframes tzBlink {
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0.3
+    }
+}
+
+.tza-terminal {
+    background: #080810;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    height: 100px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.tza-terminal .tl {
+    padding: 1px 0;
+}
+
+.tza-terminal .r,
+.tl.r {
+    color: #f87171;
+}
+
+.tza-terminal .g,
+.tl.g {
+    color: #4ade80;
+}
+
+.tza-terminal .y,
+.tl.y {
+    color: #fbbf24;
+}
+
+.tza-terminal .w {
+    color: #9ca3af;
+}
+
+/* ── SCAN SCREEN ── */
+.tza-dropzone {
+    border: 2px dashed rgba(224, 32, 32, 0.4);
+    border-radius: 10px;
+    background: rgba(224, 32, 32, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px 20px;
+    margin-bottom: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tza-dropzone:hover,
+.tza-dropzone.hover {
+    background: rgba(224, 32, 32, 0.08);
+    border-color: #e02020;
+    box-shadow: 0 0 20px rgba(224, 32, 32, 0.15);
+}
+
+.tza-drop-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e02020;
+    letter-spacing: 1px;
+}
+
+.tza-drop-or {
+    color: #4b5563;
+    font-size: 11px;
+}
+
+.tza-drop-types {
+    font-size: 10px;
+    color: #374151;
+    margin-top: 4px;
+}
+
+.tza-scan-body {
+    display: flex;
+    gap: 14px;
+    height: calc(100% - 160px);
+}
+
+.tza-file-list-panel {
+    width: 200px;
+    flex-shrink: 0;
+    background: #13131a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.tza-meta-panel {
+    flex: 1;
+    background: #13131a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tza-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.tza-file-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #1a1a24;
+    border-radius: 5px;
+    font-size: 11px;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.tza-file-item:hover {
+    background: rgba(224, 32, 32, 0.1);
+    color: #fff;
+}
+
+.tza-meta-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.tza-meta-table th {
+    text-align: left;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tza-meta-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #d1d5db;
+}
+
+.tza-meta-table tr.tza-row-crit td {
+    background: rgba(224, 32, 32, 0.05);
+}
+
+.tza-meta-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.tza-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.tza-tag.critical {
+    background: rgba(224, 32, 32, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(224, 32, 32, 0.3);
+}
+
+.tza-tag.medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tza-tag.low {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.tza-meta-score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.tza-score-bar {
+    flex: 1;
+    height: 6px;
+    background: #1c1c24;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.tza-score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e02020, #ff6060);
+    border-radius: 3px;
+}
+
+/* Toggle switches */
+.tza-tog {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 18px;
+}
+
+.tza-tog input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.tza-tog .ts {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #2a2a36;
+    border-radius: 9px;
+    transition: 0.25s;
+}
+
+.tza-tog .ts::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 3px;
+    left: 3px;
+    background: #6b7280;
+    border-radius: 50%;
+    transition: 0.25s;
+}
+
+.tza-tog input:checked+.ts {
+    background: rgba(224, 32, 32, 0.3);
+}
+
+.tza-tog input:checked+.ts::before {
+    background: #e02020;
+    transform: translateX(16px);
+}
+
+/* ── X-RAY SCREEN ── */
+.tza-xray-cat-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.tza-xray-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.tza-xray-row.crit {
+    color: #fca5a5;
+}
+
+.tza-ai-panel {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(224, 32, 32, 0.08);
+    border: 1px solid rgba(224, 32, 32, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.tza-ai-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.tza-heat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.tza-heat-row span:first-child {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.tza-heat-bar {
+    flex: 1;
+    height: 6px;
+    background: #1c1c24;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.tza-heat-bar div {
+    height: 100%;
+    border-radius: 3px;
+}
+
+/* ── CLEAN SCREEN ── */
+.tza-shield-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 130px;
+}
+
+.tza-spin-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #e02020;
+    border-right-color: rgba(224, 32, 32, 0.3);
+}
+
+.tza-shield-wrap.cleaning .tza-spin-ring {
+    animation: tzSpin 1s linear infinite;
+}
+
+.tza-clean-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.tza-hash-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.tza-hash-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: top;
+}
+
+.tza-hash-table td:first-child {
+    color: #6b7280;
+    width: 120px;
+}
+
+.tza-hash-val {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: #a78bfa;
+    word-break: break-all;
+}
+
+.tza-cert-badge {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #4ade80;
+    border-radius: 6px;
+    padding: 8px 14px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* ── WATCH / SETTINGS ROWS ── */
+.tza-cfg-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 6px;
+}
+
+.tza-cfg-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 10px;
+}
+
+.tza-cfg-lbl {
+    font-size: 12px;
+    color: #d1d5db;
+    font-weight: 500;
+}
+
+.tza-cfg-val {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.tza-cfg-desc {
+    font-size: 10px;
+    color: #4b5563;
+    margin-top: 2px;
+}
+
+/* ── REPORT TABLE ── */
+.tza-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+.tza-report-table th {
+    text-align: left;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tza-report-table td {
+    padding: 8px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #d1d5db;
+}
+
+.tza-report-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── SETTINGS - THEME ── */
+.tza-theme-opts {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.tza-theme-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 10px;
+    color: #6b7280;
+    transition: all 0.15s;
+}
+
+.tza-theme-opt:hover {
+    border-color: rgba(224, 32, 32, 0.3);
+    color: #d1d5db;
+}
+
+.tza-theme-opt.active {
+    border-color: #e02020;
+    color: #fff;
+    background: rgba(224, 32, 32, 0.08);
+}
+
+.tza-theme-sw {
+    width: 40px;
+    height: 24px;
+    border-radius: 5px;
+    border: 2px solid;
+}
+
+/* ── BUTTONS ── */
+.tza-btn-primary {
+    background: #e02020;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.tza-btn-primary:hover {
+    background: #c01818;
+    box-shadow: 0 0 12px rgba(224, 32, 32, 0.4);
+}
+
+.tza-btn-sec {
+    background: #1c1c28;
+    color: #9ca3af;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.tza-btn-sec:hover {
+    background: #242432;
+    color: #fff;
+}
+
+.tza-btn-sm {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+}
+
+/* ════════════════════════════════════════
+   TRACEZERO TRAY MENU STYLES
+════════════════════════════════════════ */
+.tz-tray-menu {
+    position: absolute;
+    bottom: 88px;
+    right: 80px;
+    /* near system tray */
+    width: 250px;
+    background: #121216;
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 16px rgba(224, 32, 32, 0.15);
+    padding: 6px 0;
+    z-index: 300;
+    color: #e0e0e8;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.97);
+    transform-origin: bottom center;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tz-tray-menu.visible {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+}
+
+.tz-tray-header {
+    padding: 10px 16px;
+    background: linear-gradient(180deg, rgba(224, 32, 32, 0.08) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(224, 32, 32, 0.2);
+    margin-bottom: 4px;
+}
+
+.tz-tray-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tz-tray-icon {
+    width: 28px;
+    height: 28px;
+    filter: drop-shadow(0 0 4px #e02020);
+}
+
+.tz-tray-divider {
+    height: 1px;
+    background: #2a2a32;
+    margin: 4px 12px;
+}
+
+.tz-tray-item,
+.tz-tray-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: #e0e0e8;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, color 0.12s;
+    position: relative;
+}
+
+.tz-tray-item svg,
+.tz-tray-btn svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    stroke-width: 1.8;
+}
+
+.tz-tray-item:hover,
+.tz-tray-btn:hover {
+    background: rgba(224, 32, 32, 0.15);
+    color: #fff;
+}
+
+.tz-tray-item .chev {
+    margin-left: auto;
+    margin-right: 0;
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+}
+
+.tz-tray-submenu {
+    position: absolute;
+    right: 100%;
+    top: -4px;
+    width: 200px;
+    background: #18181c;
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    padding: 4px 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 301;
+}
+
+.tz-tray-submenu-up {
+    top: auto;
+    bottom: -4px;
+}
+
+.tz-tray-item:hover .tz-tray-submenu {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+}

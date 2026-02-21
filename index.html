@@ -14,10 +14,15 @@
     <div class="desktop" id="desktop">
 
         <div id="fullscreen-hint"
-            style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.9); font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 24px; font-weight: 500; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 12px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none; text-align: center; line-height: 1.4;">
+            style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 24px; font-weight: bold; letter-spacing: 2px; z-index: 1000; pointer-events: none; text-align: center; line-height: 1.4;">
             Press F11 for full screen
             <br>
-            <span style="font-size: 14px; font-weight: 400; color: #ffb900;">View in desktop only</span>
+            <span style="font-size: 14px; font-weight: bold; color: red;">View in desktop only</span>
+        </div>
+
+        <div id="interaction-hint"
+            style="position: absolute; top: 40px; right: 40px; color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 28px; font-weight: bold; letter-spacing: 2px; z-index: 1000; pointer-events: none; text-align: right; line-height: 1.4;">
+            Click the icons to interact
         </div>
 
         <!-- Desktop Icons Area -->
@@ -36,18 +41,47 @@
             </div>
 
             <!-- Privacy Folder Hint -->
+            <!-- desktop-icons-area at top:16, left:16. Icon order: ThisPC(h≈136), Recycle(h≈136), PrivacyFolder
+                 Privacy Folder icon center-y ≈ 16 + 136+4+136+4 + 8(pad) + 44(half svg) = 348px
+                 We place the hint container top such that SVG loop center (y=52 in SVG) aligns to icon center.
+                 container top = 348 - 52 = 296 → but hint itself is inside desktop-icons-area which is relative.
+                 Using absolute on desktop (parent), accounting for desktop-icons-area offset:
+                 Icon absolute top ≈ 16 + 136+4+136+4 = 296px → icon center ≈ 296 + 8 + 44 = 348px
+                 Hint top = 348 - 52 = 296. Arrow SVG left starts at icon left (16px), so hint left = 16.
+            -->
             <div id="privacy-hint"
-                style="position: absolute; left: 140px; top: 280px; width: 280px; display: flex; align-items: flex-start; gap: 10px; z-index: 10;">
-                <svg viewBox="0 0 32 24" fill="none"
-                    style="width: 48px; height: 32px; flex-shrink: 0; transform: scaleX(-1) rotate(20deg); margin-top: -5px;">
-                    <path d="M25 12L3 12" stroke="#FFB900" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M10 19L3 12L10 5" stroke="#FFB900" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                style="position: absolute; left: -20px; top: 264px; display: flex; flex-direction: row; align-items: center; z-index: 15; pointer-events: none;">
+                <!--
+                  SVG: 150px wide × 104px tall
+                  Loop wraps around the Privacy Folder icon (88×88 svg, centered in 110px col with 8px pad = center at x=55 in SVG)
+                  Icon sits at approximately x:0-110, y:0-104 in the svg space.
+                  Loop: Bezier that orbits the icon center (55, 52), then shaft exits right → arrowhead.
+                -->
+                <svg viewBox="-40 -38 230 182" fill="none"
+                    style="width: 195px; height: 148px; flex-shrink: 0; overflow: visible;">
+                    <!--
+                      Icon occupies approx x:0-110, y:0-104 in local space.
+                      Loop must travel OUTSIDE those bounds on every side.
+                      Entry: right-side upper (x=118, y=42). Curve UP and LEFT outside the icon top.
+                      Then DOWN and RIGHT outside the icon bottom. Exit right as shaft → arrowhead.
+                    -->
+                    <path d="
+                        M 100,95
+                        Q 145,90  125,34
+                        C 125,-15  -38,-15  -38,52
+                        C -38,142  88,146  112,100
+                        Q 130,72  170,72
+
+                    " stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                        opacity="0.92" />
+                    <!-- Arrowhead pointing right at text box -->
+                    <path d="M 155,58 Q 190,72 155,86" stroke="black" stroke-width="2.6" stroke-linecap="round"
+                        stroke-linejoin="round" fill="none" opacity="0.92" />
                 </svg>
                 <div
-                    style="background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,185,0,0.3); color: #fff; font-size: 13px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                    <strong style="color: #FFB900; display: block; margin-bottom: 4px; font-size: 14px;">Privacy
+                    style="background: rgba(255,255,255,0.18); backdrop-filter: blur(12px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); color: #000; font-size: 15px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,0.3); width: 280px;">
+                    <strong
+                        style="color: #000; font-weight: bold; display: block; margin-bottom: 4px; font-size: 16px;">Privacy
                         Folder</strong>
                     The Privacy Folder is a secure storage space for all cleaned files.<br>
                     Only sanitized and processed files are saved here for safe access and management.
@@ -70,18 +104,30 @@
             </div>
 
             <!-- TRACEZERO Hint -->
+            <!-- TRACEZERO is icon 4: top = 16 + (136+4)*3 = 16+420 = 436. Center = 436+8+50(half img height)=494px
+                 Hint top = 494 - 52 = 442
+            -->
             <div id="tz-hint"
-                style="position: absolute; left: 140px; top: 480px; width: 320px; display: flex; align-items: flex-start; gap: 10px; z-index: 10;">
-                <svg viewBox="0 0 32 24" fill="none"
-                    style="width: 48px; height: 32px; flex-shrink: 0; transform: scaleX(-1) rotate(20deg); margin-top: -5px;">
-                    <path d="M25 12L3 12" stroke="#e02020" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M10 19L3 12L10 5" stroke="#e02020" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                style="position: absolute; left: -20px; top: 416px; display: flex; flex-direction: row; align-items: center; z-index: 15; pointer-events: none;">
+                <svg viewBox="-40 -38 230 182" fill="none"
+                    style="width: 195px; height: 148px; flex-shrink: 0; overflow: visible;">
+                    <!-- Same outer-loop lasso around TRACEZERO icon -->
+                    <path d="
+                        M 100,95
+                        Q 145,90  125,34
+                        C 125,-15  -38,-15  -38,52
+                        C -38,142  88,146  112,100
+                        Q 130,72  170,72
+                    " stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                        opacity="0.92" />
+                    <!-- Arrowhead pointing right at text box -->
+                    <path d="M 155,58 Q 190,72 155,86" stroke="black" stroke-width="2.6" stroke-linecap="round"
+                        stroke-linejoin="round" fill="none" opacity="0.92" />
                 </svg>
                 <div
-                    style="background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(224,32,32,0.3); color: #fff; font-size: 13px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                    <strong style="color: #e02020; display: block; margin-bottom: 4px; font-size: 14px;">Security
+                    style="transform: translateY(40px); background: rgba(255,255,255,0.18); backdrop-filter: blur(12px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); color: #000; font-size: 15px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,0.3); width: 300px;">
+                    <strong
+                        style="color: #000; font-weight: bold; display: block; margin-bottom: 4px; font-size: 16px;">Security
                         Dashboard</strong>
                     The core security application of the system, designed to scan, analyze, and eliminate digital
                     traces.<br>
@@ -143,10 +189,12 @@
 
             <!-- TRACEZERO Taskbar Hint -->
             <div id="tz-taskbar-hint"
-                style="position: absolute; bottom: 85px; right: 80px; width: 320px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 10;">
+                style="position: absolute; bottom: 108px; right: 25px; width: 350px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; z-index: 10;">
                 <div
-                    style="background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(224,32,32,0.3); color: #fff; font-size: 13px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-                    <strong style="color: #e02020; display: block; margin-bottom: 4px; font-size: 14px;">TRACEZERO Quick
+                    style="background: rgba(255,255,255,0.18); backdrop-filter: blur(12px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); color: #000; font-size: 15px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                    <strong
+                        style="color: #000; font-weight: bold; display: block; margin-bottom: 4px; font-size: 16px;">TRACEZERO
+                        Quick
                         Menu</strong>
                     The TraceZero System Tray provides quick, one-click access to essential actions like scanning files,
                     cleaning metadata, enabling Folder Watch, and viewing reports without opening the full application
@@ -154,12 +202,20 @@
                     It acts as a real-time protection control center, showing the current privacy status (Safe, Risk
                     Detected, or Critical).
                 </div>
-                <svg viewBox="0 0 24 32" fill="none"
-                    style="width: 24px; height: 32px; flex-shrink: 0; margin-right: 235px; margin-top: -5px;">
-                    <path d="M12 2L12 25" stroke="#e02020" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M5 18L12 25L19 18" stroke="#e02020" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                <!-- Arrow with tail curving around the taskbar icon below-right -->
+                <svg viewBox="-50 -10 280 160" fill="none"
+                    style="position: absolute; right: 255px; bottom: -133px; width: 280px; height: 160px; pointer-events: none; overflow: visible; z-index: -1;">
+                    <!-- Curved tail wrapping around the taskbar icon -->
+                    <path d="
+                        M 140,90
+                        C 140,45  210,45  210,90
+                        C 210,135 130,140 160,70
+                        Q 175,40  180,25
+                    " stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                        opacity="0.92" />
+                    <!-- Rounded arrowhead pointing UP toward the text box -->
+                    <path d="M 165,35 Q 185,15 195,35" stroke="black" stroke-width="2.6" stroke-linecap="round"
+                        stroke-linejoin="round" fill="none" opacity="0.92" />
                 </svg>
             </div>
 

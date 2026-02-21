@@ -74,6 +74,10 @@ taskbar.addEventListener('click', function (e) {
     if (tzIcon && tzIcon.contains(e.target)) return;
     if (tzMenu && tzMenu.contains(e.target)) return;
 
+    // Ignore clicks on minimized app taskbar buttons
+    if (tzTaskbarAppBtn && tzTaskbarAppBtn.contains(e.target)) return;
+    if (fmTaskbarAppBtn && fmTaskbarAppBtn.contains(e.target)) return;
+
     startOpen = !startOpen;
     startmenu.style.bottom = startOpen ? '80px' : '-1100px';
     if (startOpen && popupOpen) {
@@ -85,6 +89,7 @@ taskbar.addEventListener('click', function (e) {
         window.tzCloseTray();
     }
 });
+
 
 /* ── Click outside: close both ── */
 document.addEventListener('click', function (e) {
@@ -100,6 +105,34 @@ document.addEventListener('click', function (e) {
 });
 
 /* ════════════════════════════════════════════
+   APP LAUNCH — window opens immediately, loader shows inside for 2.5s
+════════════════════════════════════════════ */
+
+function launchTZ() {
+    // If already open, just bring it to front (restore if minimized)
+    if (tzWindow.style.display === 'flex') { restoreTZ && restoreTZ(); return; }
+    // Open window right away
+    window.openTZ ? window.openTZ() : openTZ();
+    // Show in-window loader
+    const loader = document.getElementById('tzLoader');
+    if (loader) {
+        loader.style.display = 'flex';
+        setTimeout(function () {
+            loader.style.opacity = '0';
+            setTimeout(function () {
+                loader.style.display = 'none';
+                loader.style.opacity = '1';
+            }, 350);
+        }, 2500);
+    }
+}
+
+function launchFm() {
+    if (fmWindow.style.display === 'flex') { restoreFm && restoreFm(); return; }
+    openFm();
+}
+
+/* ════════════════════════════════════════════
    FILE MANAGER — open / close / minimize / maximize
 ════════════════════════════════════════════ */
 const fmWindow = document.getElementById('fmWindow');
@@ -109,20 +142,54 @@ const fmResizeHandle = document.getElementById('fmResizeHandle');
 let fmMaximized = false;
 let fmSavedState = {};   // stores position/size before maximize
 
+const fmTaskbarAppBtn = document.getElementById('fmTaskbarAppBtn');
+
 function openFm() {
+    fmWindow.classList.remove('window-restoring', 'window-minimizing');
     fmWindow.classList.add('open');
     fmWindow.style.display = 'flex';
+    // Show taskbar button as active (window is open)
+    if (fmTaskbarAppBtn) {
+        fmTaskbarAppBtn.style.display = 'flex';
+        fmTaskbarAppBtn.classList.add('tb-active');
+    }
 }
 
 function closeFm() {
+    // Close removes the taskbar button entirely
+    if (fmTaskbarAppBtn) {
+        fmTaskbarAppBtn.style.display = 'none';
+        fmTaskbarAppBtn.classList.remove('tb-active');
+    }
     fmWindow.classList.remove('open');
     fmWindow.style.display = 'none';
     fmMaximized = false;
 }
 
 function minimizeFm() {
-    fmWindow.classList.remove('open');
-    fmWindow.style.display = 'none';
+    fmWindow.classList.remove('window-restoring');
+    fmWindow.classList.add('window-minimizing');
+    setTimeout(function () {
+        fmWindow.classList.remove('open', 'window-minimizing');
+        fmWindow.style.display = 'none';
+        // Keep button but mark as minimized (not active)
+        if (fmTaskbarAppBtn) {
+            fmTaskbarAppBtn.classList.remove('tb-active');
+        }
+    }, 210);
+}
+
+function restoreFm() {
+    fmWindow.classList.remove('window-minimizing');
+    fmWindow.classList.add('open', 'window-restoring');
+    fmWindow.style.display = 'flex';
+    // Re-mark button as active
+    if (fmTaskbarAppBtn) {
+        fmTaskbarAppBtn.classList.add('tb-active');
+    }
+    setTimeout(function () {
+        fmWindow.classList.remove('window-restoring');
+    }, 230);
 }
 
 function maximizeFm() {
@@ -214,18 +281,47 @@ const tzResizeHandle = document.getElementById('tzResizeHandle');
 let tzMaximized = false;
 let tzSavedState = {};
 
+const tzTaskbarAppBtn = document.getElementById('tzTaskbarAppBtn');
+
 function openTZ() {
+    tzWindow.classList.remove('window-restoring', 'window-minimizing');
     tzWindow.classList.add('open');
     tzWindow.style.display = 'flex';
+    if (tzTaskbarAppBtn) {
+        tzTaskbarAppBtn.style.display = 'flex';
+        tzTaskbarAppBtn.classList.add('tb-active');
+    }
 }
 function closeTZ() {
+    if (tzTaskbarAppBtn) {
+        tzTaskbarAppBtn.style.display = 'none';
+        tzTaskbarAppBtn.classList.remove('tb-active');
+    }
     tzWindow.classList.remove('open');
     tzWindow.style.display = 'none';
     tzMaximized = false;
 }
 function minimizeTZ() {
-    tzWindow.classList.remove('open');
-    tzWindow.style.display = 'none';
+    tzWindow.classList.remove('window-restoring');
+    tzWindow.classList.add('window-minimizing');
+    setTimeout(function () {
+        tzWindow.classList.remove('open', 'window-minimizing');
+        tzWindow.style.display = 'none';
+        if (tzTaskbarAppBtn) {
+            tzTaskbarAppBtn.classList.remove('tb-active');
+        }
+    }, 210);
+}
+function restoreTZ() {
+    tzWindow.classList.remove('window-minimizing');
+    tzWindow.classList.add('open', 'window-restoring');
+    tzWindow.style.display = 'flex';
+    if (tzTaskbarAppBtn) {
+        tzTaskbarAppBtn.classList.add('tb-active');
+    }
+    setTimeout(function () {
+        tzWindow.classList.remove('window-restoring');
+    }, 230);
 }
 function maximizeTZ() {
     if (!tzMaximized) {

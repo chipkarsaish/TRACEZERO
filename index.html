@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Try Windows 11</title>
+    <title>TRACEZERO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -25,42 +25,13 @@
 
             <!-- This PC -->
             <div class="desktop-icon" ondblclick="alert('This PC')">
-                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Monitor body -->
-                    <rect x="4" y="6" width="40" height="28" rx="3" fill="#1E90FF" />
-                    <rect x="6" y="8" width="36" height="24" rx="2" fill="#E8F4FD" />
-                    <!-- Screen content lines -->
-                    <rect x="10" y="12" width="20" height="2" rx="1" fill="#1E90FF" opacity="0.4" />
-                    <rect x="10" y="16" width="14" height="2" rx="1" fill="#1E90FF" opacity="0.4" />
-                    <rect x="10" y="20" width="17" height="2" rx="1" fill="#1E90FF" opacity="0.4" />
-                    <!-- Stand -->
-                    <rect x="20" y="34" width="8" height="5" rx="1" fill="#6AAFE6" />
-                    <rect x="15" y="39" width="18" height="3" rx="1.5" fill="#6AAFE6" />
-                </svg>
+                <img src="thispc.png" alt="This PC" class="desktop-icon-img">
                 <span>This PC</span>
             </div>
 
             <!-- Recycle Bin (empty) -->
             <div class="desktop-icon" ondblclick="alert('Recycle Bin')">
-                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Bin body -->
-                    <path d="M10 16L13 42H35L38 16H10Z" fill="#B0C4DE" />
-                    <path d="M10 16L13 42H35L38 16H10Z" fill="url(#binGrad)" />
-                    <!-- Bin lid -->
-                    <rect x="7" y="12" width="34" height="4" rx="2" fill="#7A9CC0" />
-                    <!-- Handle -->
-                    <rect x="19" y="8" width="10" height="4" rx="2" fill="#7A9CC0" />
-                    <!-- Vertical lines on bin -->
-                    <line x1="20" y1="20" x2="19" y2="38" stroke="#7A9CC0" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="24" y1="20" x2="24" y2="38" stroke="#7A9CC0" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="28" y1="20" x2="29" y2="38" stroke="#7A9CC0" stroke-width="1.5" stroke-linecap="round" />
-                    <defs>
-                        <linearGradient id="binGrad" x1="10" y1="16" x2="38" y2="42" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#C8DCF0" />
-                            <stop offset="100%" stop-color="#8AAEC8" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+                <img src="recycle.png" alt="Recycle Bin" class="desktop-icon-img">
                 <span>Recycle Bin</span>
             </div>
 
@@ -84,7 +55,7 @@
             </div>
 
             <!-- Privacy Folder -->
-            <div class="desktop-icon" ondblclick="openFm()">
+            <div class="desktop-icon" ondblclick="launchFm()">
                 <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M4 12C4 9.79 5.79 8 8 8H19L24 13H40C42.21 13 44 14.79 44 17V38C44 40.21 42.21 42 40 42H8C5.79 42 4 40.21 4 38V12Z"
@@ -120,17 +91,55 @@
             </div>
 
             <!-- TRACEZERO -->
-            <div class="desktop-icon" ondblclick="openTZ()" title="TRACEZERO">
+            <div class="desktop-icon" ondblclick="launchTZ()" title="TRACEZERO">
                 <img src="sec.ico" alt="TRACEZERO" class="desktop-icon-img">
                 <span>TRACEZERO</span>
             </div>
 
         </div>
 
+        <!-- ── App Launch Loading Overlay ── -->
+        <div id="appLaunchOverlay" style="display:none;">
+            <div class="alo-box">
+                <div class="alo-icon-wrap" id="aloIconWrap"></div>
+                <div class="alo-name" id="aloName"></div>
+                <div class="alo-spinner">
+                    <div class="alo-dot"></div>
+                    <div class="alo-dot"></div>
+                    <div class="alo-dot"></div>
+                    <div class="alo-dot"></div>
+                    <div class="alo-dot"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Taskbar -->
         <div class="taskbar" id="taskbar">
-            <!-- Center icons -->
-            <img src="icons.PNG" class="taskbar-center" alt="">
+            <!-- Center icons + minimized app buttons -->
+            <div class="taskbar-apps-row">
+                <img src="icons.PNG" class="taskbar-center" alt="">
+
+                <!-- TRACEZERO minimized taskbar button -->
+                <button class="taskbar-app-btn" id="tzTaskbarAppBtn" style="display:none;" onclick="restoreTZ()"
+                    title="TRACEZERO">
+                    <img src="sec.ico" class="taskbar-app-icon" alt="">
+                    <span class="taskbar-app-label">TRACEZERO</span>
+                    <span class="taskbar-app-indicator tz-indicator"></span>
+                </button>
+
+                <!-- Privacy Folder minimized taskbar button -->
+                <button class="taskbar-app-btn" id="fmTaskbarAppBtn" style="display:none;" onclick="restoreFm()"
+                    title="Privacy Folder">
+                    <svg class="taskbar-app-icon" viewBox="0 0 20 20" fill="none">
+                        <path
+                            d="M2 5C2 4.45 2.45 4 3 4H8L10 6H17C17.55 6 18 6.45 18 7V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V5Z"
+                            fill="#FFB900" />
+                        <path d="M2 8H18V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V8Z" fill="#FDD663" />
+                    </svg>
+                    <span class="taskbar-app-label">Privacy Folder</span>
+                    <span class="taskbar-app-indicator fm-indicator"></span>
+                </button>
+            </div>
 
             <!-- TRACEZERO Taskbar Hint -->
             <div id="tz-taskbar-hint"
@@ -461,6 +470,22 @@
                 </div>
             </div>
 
+            <!-- In-window loader -->
+            <div class="win-loader" id="fmLoader">
+                <div class="win-loader-inner">
+                    <svg class="win-loader-icon" viewBox="0 0 48 48" fill="none">
+                        <path
+                            d="M4 12C4 9.79 5.79 8 8 8H19L24 13H40C42.21 13 44 14.79 44 17V38C44 40.21 42.21 42 40 42H8C5.79 42 4 40.21 4 38V12Z"
+                            fill="#FFB900" />
+                        <path d="M4 19H44V38C44 40.21 42.21 42 40 42H8C5.79 42 4 40.21 4 38V19Z" fill="#FDD663" />
+                    </svg>
+                    <div class="win-loader-name">Privacy Folder</div>
+                    <div class="win-loader-dots">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Ribbon / Toolbar -->
             <div class="fm-toolbar">
                 <button class="fm-nav-btn" title="Back">
@@ -600,6 +625,21 @@
                     <button class="fm-ctrl fm-min" onclick="minimizeTZ()" title="Minimize">&#x2500;</button>
                     <button class="fm-ctrl fm-max" onclick="maximizeTZ()" title="Maximize">&#x25A1;</button>
                     <button class="fm-ctrl fm-close" onclick="closeTZ()" title="Close">&#x2715;</button>
+                </div>
+            </div>
+
+            <!-- In-window loader -->
+            <div class="win-loader win-loader-dark" id="tzLoader">
+                <div class="win-loader-inner">
+                    <img src="sec.ico" class="win-loader-icon" alt="">
+                    <div class="win-loader-name" style="color:#fff;">TRACEZERO</div>
+                    <div class="win-loader-dots">
+                        <span style="background:#e02020"></span>
+                        <span style="background:#e02020"></span>
+                        <span style="background:#e02020"></span>
+                        <span style="background:#e02020"></span>
+                        <span style="background:#e02020"></span>
+                    </div>
                 </div>
             </div>
 

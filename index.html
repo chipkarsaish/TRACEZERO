@@ -24,13 +24,13 @@
         <div class="desktop-icons-area">
 
             <!-- This PC -->
-            <div class="desktop-icon" ondblclick="alert('This PC')">
+            <div class="desktop-icon" ondblclick="openFmAs('This PC')">
                 <img src="thispc.png" alt="This PC" class="desktop-icon-img">
                 <span>This PC</span>
             </div>
 
             <!-- Recycle Bin (empty) -->
-            <div class="desktop-icon" ondblclick="alert('Recycle Bin')">
+            <div class="desktop-icon" ondblclick="openFmAs('Recycle Bin')">
                 <img src="recycle.png" alt="Recycle Bin" class="desktop-icon-img">
                 <span>Recycle Bin</span>
             </div>
@@ -454,14 +454,14 @@
 
             <!-- Title Bar -->
             <div class="fm-titlebar" id="fmTitlebar">
-                <div class="fm-titlebar-left">
-                    <svg class="fm-title-icon" viewBox="0 0 20 20" fill="none">
+                <div id="fmTitleIconWrap" class="fm-titlebar-left" style="display:contents">
+                    <svg id="fmTitleIcon" class="fm-title-icon" viewBox="0 0 20 20" fill="none">
                         <path
                             d="M2 5C2 4.45 2.45 4 3 4H8L10 6H17C17.55 6 18 6.45 18 7V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V5Z"
                             fill="#FFB900" />
                         <path d="M2 8H18V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V8Z" fill="#FDD663" />
                     </svg>
-                    <span class="fm-title-text">Privacy Folder</span>
+                    <span class="fm-title-text" id="fmTitleText">Privacy Folder</span>
                 </div>
                 <div class="fm-win-controls">
                     <button class="fm-ctrl fm-min" onclick="minimizeFm()" title="Minimize">&#x2500;</button>
@@ -513,7 +513,7 @@
                         <rect x="3" y="4" width="10" height="6" rx="1" fill="#E8F4FD" />
                         <rect x="5" y="13" width="6" height="1.5" rx="0.75" fill="#6AAFE6" />
                     </svg>
-                    <span>This PC &gt; Privacy Folder</span>
+                    <span id="fmAddressText">This PC &gt; Privacy Folder</span>
                 </div>
                 <!-- Search -->
                 <div class="fm-search-bar">

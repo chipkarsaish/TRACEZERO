@@ -129,7 +129,42 @@ function launchTZ() {
 
 function launchFm() {
     if (fmWindow.style.display === 'flex') { restoreFm && restoreFm(); return; }
+    openFmAs('Privacy Folder');
+}
+
+/* Open File Manager as a specific directory */
+function openFmAs(dirName) {
     openFm();
+
+    const titleText = document.getElementById('fmTitleText');
+    const titleIcon = document.getElementById('fmTitleIcon');
+    const addressText = document.getElementById('fmAddressText');
+
+    if (dirName === 'Recycle Bin') {
+        if (titleText) titleText.textContent = 'Recycle Bin';
+        if (addressText) addressText.innerHTML = 'This PC &gt; Recycle Bin';
+        if (titleIcon) titleIcon.innerHTML =
+            `<path d="M4 3h12l1 4H3L4 3Z" fill="#B0C4DE"/>
+             <path d="M3 7h14l-1.5 11H4.5L3 7Z" fill="#C8DCF0"/>
+             <line x1="7" y1="9" x2="6.5" y2="16" stroke="#7A9CC0" stroke-width="1.2" stroke-linecap="round"/>
+             <line x1="10" y1="9" x2="10" y2="16" stroke="#7A9CC0" stroke-width="1.2" stroke-linecap="round"/>
+             <line x1="13" y1="9" x2="13.5" y2="16" stroke="#7A9CC0" stroke-width="1.2" stroke-linecap="round"/>`;
+    } else if (dirName === 'This PC') {
+        if (titleText) titleText.textContent = 'This PC';
+        if (addressText) addressText.innerHTML = 'This PC';
+        if (titleIcon) titleIcon.innerHTML =
+            `<rect x="1" y="2" width="14" height="10" rx="1.5" fill="#1E90FF"/>
+             <rect x="2" y="3" width="12" height="8" rx="1" fill="#E8F4FD"/>
+             <rect x="6" y="12" width="5" height="1.5" rx="0.75" fill="#6AAFE6"/>
+             <rect x="4" y="13.5" width="9" height="1" rx="0.5" fill="#6AAFE6"/>`;
+    } else {
+        // Default: Privacy Folder
+        if (titleText) titleText.textContent = 'Privacy Folder';
+        if (addressText) addressText.innerHTML = 'This PC &gt; Privacy Folder';
+        if (titleIcon) titleIcon.innerHTML =
+            `<path d="M2 5C2 4.45 2.45 4 3 4H8L10 6H17C17.55 6 18 6.45 18 7V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V5Z" fill="#FFB900"/>
+             <path d="M2 8H18V15C18 15.55 17.55 16 17 16H3C2.45 16 2 15.55 2 15V8Z" fill="#FDD663"/>`;
+    }
 }
 
 /* ════════════════════════════════════════════

@@ -10,6 +10,7 @@ const DESKTOP_H = 1080;
 let startOpen = false;
 let popupOpen = false;
 
+
 /* ── Scale desktop to fit viewport, maintaining 16:9 aspect ratio ── */
 function scaleDesktop() {
     const scale = Math.min(
@@ -183,15 +184,14 @@ function openFm() {
     fmWindow.classList.remove('window-restoring', 'window-minimizing');
     fmWindow.classList.add('open');
     fmWindow.style.display = 'flex';
-    // Show taskbar button as active (window is open)
     if (fmTaskbarAppBtn) {
         fmTaskbarAppBtn.style.display = 'flex';
         fmTaskbarAppBtn.classList.add('tb-active');
     }
+
 }
 
 function closeFm() {
-    // Close removes the taskbar button entirely
     if (fmTaskbarAppBtn) {
         fmTaskbarAppBtn.style.display = 'none';
         fmTaskbarAppBtn.classList.remove('tb-active');
@@ -199,6 +199,7 @@ function closeFm() {
     fmWindow.classList.remove('open');
     fmWindow.style.display = 'none';
     fmMaximized = false;
+
 }
 
 function minimizeFm() {
@@ -207,10 +208,8 @@ function minimizeFm() {
     setTimeout(function () {
         fmWindow.classList.remove('open', 'window-minimizing');
         fmWindow.style.display = 'none';
-        // Keep button but mark as minimized (not active)
-        if (fmTaskbarAppBtn) {
-            fmTaskbarAppBtn.classList.remove('tb-active');
-        }
+        if (fmTaskbarAppBtn) { fmTaskbarAppBtn.classList.remove('tb-active'); }
+
     }, 210);
 }
 
@@ -218,13 +217,9 @@ function restoreFm() {
     fmWindow.classList.remove('window-minimizing');
     fmWindow.classList.add('open', 'window-restoring');
     fmWindow.style.display = 'flex';
-    // Re-mark button as active
-    if (fmTaskbarAppBtn) {
-        fmTaskbarAppBtn.classList.add('tb-active');
-    }
-    setTimeout(function () {
-        fmWindow.classList.remove('window-restoring');
-    }, 230);
+    if (fmTaskbarAppBtn) { fmTaskbarAppBtn.classList.add('tb-active'); }
+
+    setTimeout(function () { fmWindow.classList.remove('window-restoring'); }, 230);
 }
 
 function maximizeFm() {
@@ -326,6 +321,7 @@ function openTZ() {
         tzTaskbarAppBtn.style.display = 'flex';
         tzTaskbarAppBtn.classList.add('tb-active');
     }
+
 }
 function closeTZ() {
     if (tzTaskbarAppBtn) {
@@ -335,6 +331,7 @@ function closeTZ() {
     tzWindow.classList.remove('open');
     tzWindow.style.display = 'none';
     tzMaximized = false;
+
 }
 function minimizeTZ() {
     tzWindow.classList.remove('window-restoring');
@@ -342,21 +339,17 @@ function minimizeTZ() {
     setTimeout(function () {
         tzWindow.classList.remove('open', 'window-minimizing');
         tzWindow.style.display = 'none';
-        if (tzTaskbarAppBtn) {
-            tzTaskbarAppBtn.classList.remove('tb-active');
-        }
+        if (tzTaskbarAppBtn) { tzTaskbarAppBtn.classList.remove('tb-active'); }
+
     }, 210);
 }
 function restoreTZ() {
     tzWindow.classList.remove('window-minimizing');
     tzWindow.classList.add('open', 'window-restoring');
     tzWindow.style.display = 'flex';
-    if (tzTaskbarAppBtn) {
-        tzTaskbarAppBtn.classList.add('tb-active');
-    }
-    setTimeout(function () {
-        tzWindow.classList.remove('window-restoring');
-    }, 230);
+    if (tzTaskbarAppBtn) { tzTaskbarAppBtn.classList.add('tb-active'); }
+
+    setTimeout(function () { tzWindow.classList.remove('window-restoring'); }, 230);
 }
 function maximizeTZ() {
     if (!tzMaximized) {

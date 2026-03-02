@@ -377,7 +377,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 110;
+    z-index: 500;
     border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 

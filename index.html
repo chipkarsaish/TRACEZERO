@@ -21,7 +21,7 @@
         </div>
 
         <div id="interaction-hint"
-            style="position: absolute; top: 40px; right: 40px; z-index: 1000; pointer-events: none;">
+            style="position: absolute; top: 40px; right: 40px; z-index: 5; pointer-events: none;">
             <div class="interaction-hint-wrap">
                 <span class="interaction-hint-text">Click the icons to interact</span>
 
@@ -122,6 +122,22 @@
             </div>
         </div>
 
+        <!-- TRACEZERO Taskbar Hint: outside taskbar so z-index:5 keeps it below windows -->
+        <div id="tz-taskbar-hint"
+            style="position: absolute; bottom: 100px; right: 25px; width: 350px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; z-index: 5; pointer-events: none;">
+            <div class="hint-box-green"
+                style="backdrop-filter: blur(12px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); color: #000; font-size: 15px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif;">
+                <strong
+                    style="color: #000; font-weight: bold; display: block; margin-bottom: 4px; font-size: 16px;">TRACEZERO
+                    Quick Menu</strong>
+                The TraceZero System Tray provides quick, one-click access to essential actions like scanning files,
+                cleaning metadata, enabling Folder Watch, and viewing reports without opening the full application
+                dashboard.<br><br>
+                It acts as a real-time protection control center, showing the current privacy status (Safe, Risk
+                Detected, or Critical).
+            </div>
+        </div>
+
         <!-- Taskbar -->
         <div class="taskbar" id="taskbar">
             <!-- Center icons + minimized app buttons -->
@@ -150,23 +166,7 @@
                 </button>
             </div>
 
-            <!-- TRACEZERO Taskbar Hint -->
-            <div id="tz-taskbar-hint"
-                style="position: absolute; bottom: 108px; right: 25px; width: 350px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; z-index: 10;">
-                <div class="hint-box-green"
-                    style="backdrop-filter: blur(12px); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); color: #000; font-size: 15px; line-height: 1.5; font-weight: 500; font-family: 'Segoe UI', Tahoma, sans-serif;">
-                    <strong
-                        style="color: #000; font-weight: bold; display: block; margin-bottom: 4px; font-size: 16px;">TRACEZERO
-                        Quick
-                        Menu</strong>
-                    The TraceZero System Tray provides quick, one-click access to essential actions like scanning files,
-                    cleaning metadata, enabling Folder Watch, and viewing reports without opening the full application
-                    dashboard.<br><br>
-                    It acts as a real-time protection control center, showing the current privacy status (Safe, Risk
-                    Detected, or Critical).
-                </div>
 
-            </div>
 
             <!-- Right side: chevron + tray image together -->
             <div class="taskbar-right">
